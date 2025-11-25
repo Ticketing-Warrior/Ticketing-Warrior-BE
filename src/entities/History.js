@@ -1,8 +1,8 @@
 import { EntitySchema } from "typeorm";
 
 export const Record = new EntitySchema({
-  name: "Record",
-  tableName: "record",
+  name: "History",
+  tableName: "history",
   columns: {
     id: {
       type: Number,
