@@ -1,3 +1,3 @@
 import queueModel from "../models/queueModel.js";
 
-// 사용자 닉네임 및 대기열 관리
+// 실제 좌석 선점 시도

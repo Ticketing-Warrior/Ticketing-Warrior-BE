@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import routers from "./routes/queueRoutes.js";
-import { AppDataSource } from "./models/ticketModel.js";
+import { AppDataSource } from "./models/historyModel.js";
 
 dotenv.config();
 
