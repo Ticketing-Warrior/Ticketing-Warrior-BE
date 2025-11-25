@@ -1,6 +1,6 @@
 import { EntitySchema } from "typeorm";
 
-export const Record = new EntitySchema({
+export const History = new EntitySchema({
   name: "History",
   tableName: "history",
   columns: {

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Record } from "../entities/History.js";
+import { History } from "../entities/History.js";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -11,5 +11,5 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true, // 개발단계에서만 true!!
   logging: false,
-  entities: [Record],
+  entities: [History],
 });
