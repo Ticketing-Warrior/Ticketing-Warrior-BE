@@ -54,7 +54,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  # # CD: 운영 환경 배포 Job
+  # # CD: 운영 환경 배포 Job.
   # deploy-to-prod:
   #   if: ${{ github.ref_name == 'main' }} # main 브랜치에서만 실행
   #   runs-on: ubuntu-latest
