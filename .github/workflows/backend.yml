@@ -1,0 +1,83 @@
+name: CI/CD - Node.js Unified Pipeline
+
+on:
+  push:
+    branches: ["develop", "main"]
+  pull_request:
+    branches: ["develop"]
+
+permissions:
+  contents: read
+
+jobs:
+  # CI: 테스트, 빌드, ECR 푸시 Job
+  ci-and-build:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'develop' }} # develop 브랜치에서만 실행
+
+    environment: AWS
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install Dependencies & Run Tests
+        run: |
+          npm ci
+          npm test
+
+      # AWS 인증 및 ECR 로그인
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Docker 빌드, 태그 지정, ECR 푸시
+      - name: Build and Push Image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          IMAGE_TAG: build-${{ github.run_number }} # 순차적 빌드 번호 사용
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  # # CD: 운영 환경 배포 Job
+  # deploy-to-prod:
+  #   if: ${{ github.ref_name == 'main' }} # main 브랜치에서만 실행
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Configure AWS Credentials (Prod)
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         # 운영 환경 Secrets 사용
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+  #         aws-region: ${{ vars.AWS_REGION }}
+
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr-prod
+  #       uses: aws-actions/amazon-ecr-login@v2
+
+  #     # ECS 서비스 업데이트 로직 실행
+  #     - name: Deploy ECS Service to Prod
+  #       env:
+  #         ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+  #         # ECR 이미지 URI 구성
+  #         IMAGE_URI: ${{ steps.login-ecr-prod.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+  #       run: |
+  #         echo "운영 환경 ECS 서비스 업데이트 로직 (aws ecs update-service) 실행"
+  #         echo "사용할 이미지: $IMAGE_URI"
