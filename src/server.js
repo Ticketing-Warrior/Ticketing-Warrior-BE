@@ -1,11 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import routers from "./routes/queueRoutes.js";
-// import { AppDataSource } from "./models/historyModel.js";
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
 import { errorHandler } from './middlewares/errorHandler.js';
+import routers from './routes/routes.server.js';
 
 dotenv.config();
 
@@ -21,10 +20,7 @@ app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형
 //   .then(() => console.log("Database Connected"))
 //   .catch((err) => console.error("DB Connection Failed", err));
 
-app.use("/queue", routers);
-app.use("/seat", routers);
-app.use("/lock", routers);
-app.use("/history", routers);
+app.use("/", routers);
 
 app.use(
   "/docs",
