@@ -1,11 +1,18 @@
+import { NotFoundUserError } from '../errors.js';
 import {
   getAllSeats,
   resetSeats,
   removeFromQueue,
   setSessionStart,
+  getMyPosition,
 } from "../services/redisService.js";
 
 export async function startTicketing(nickname) {
+
+const curPos = await getMyPosition(nickname);
+  if(!curPos){
+    throw new NotFoundUserError('해당 닉네임을 가진 사용자가 대기열에 존재하지 않습니다.');
+  }
   // 1. 좌석 초기화 (sold 좌석 유지, locked 좌석 TTL 확인)
   await resetSeats();
 
