@@ -4,7 +4,8 @@ FROM node:20-slim as builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+# RUN npm install --omit=dev
+RUN npm install
 
 COPY . .
 
