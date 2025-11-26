@@ -5,6 +5,7 @@ import routers from "./routes/queueRoutes.js";
 // import { AppDataSource } from "./models/historyModel.js";
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
+import { errorHandler } from './middlewares/errorHandler.js';
 
 dotenv.config();
 
@@ -54,6 +55,9 @@ app.get("/openapi.json", async (req, res, next) => {
   const result = await swaggerAutogen(options)(outputFile, routes, doc);
   res.json(result ? result.data : null);
 });
+
+//전역 오류 처리 미들웨어
+app.use(errorHandler);
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
