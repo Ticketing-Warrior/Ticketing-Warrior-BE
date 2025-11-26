@@ -1,3 +1,0 @@
-import queueModel from "../models/queueModel.js";
-
-// 사용자 닉네임 및 대기열 관리
