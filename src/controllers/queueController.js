@@ -1,6 +1,6 @@
 import { BadRequestError } from '../errors.js';
 import { successHandler } from '../middlewares/responseHandler.js';
-import { insertQueue } from '../services/queueService.js';
+import { getQueuePos, insertQueue } from '../services/queueService.js';
 
 export const handleInsertQueue = async (req, res, next) => {
     try {
@@ -11,6 +11,20 @@ export const handleInsertQueue = async (req, res, next) => {
         }
         const curPos = await insertQueue(nickname);
         return successHandler(res, `대기열 진입`, {curPos : curPos} )
+    }catch(err) {
+        next(err);
+    }
+}
+
+export const handleGetQueuePos = async (req, res, next) => {
+    try{
+        const nickname = req.query?.nickname;
+        if(!nickname || nickname === undefined){
+            throw new BadRequestError("닉네임을 확인 후, 다시 이용해주세요.");
+        }
+
+        const curPos = await getQueuePos(nickname);
+        return successHandler(res, `내 순번 조회`, {curPos: curPos});
     }catch(err) {
         next(err);
     }
