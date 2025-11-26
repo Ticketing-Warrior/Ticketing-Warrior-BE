@@ -44,3 +44,15 @@ export async function removeFromQueue(nickname) {
 export async function setSessionStart(nickname) {
   await redisClient.set(`session:start:${nickname}`, Date.now());
 }
+
+// 대기열에 추가
+export async function addToQueue(nickname) {
+  await redisClient.rpush("ticketQueue", nickname);
+}
+
+// 자신의 순번 조회
+export async function getMyPosition(nickname) {
+  const pos = await redisClient.lpos("ticketQueue", nickname);
+  if (pos === null) return null;  // queue에 없음
+  return pos + 1; // 사람이 보게 1부터 시작
+}
