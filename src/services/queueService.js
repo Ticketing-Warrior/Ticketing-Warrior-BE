@@ -1,4 +1,4 @@
-import { CustomError, ExistsError } from '../errors.js';
+import { ExistsError, NotFoundUserError } from '../errors.js';
 import { addToQueue, getMyPosition } from "../services/redisService.js";
 
 export async function insertQueue(nickname) {
@@ -14,4 +14,14 @@ export async function insertQueue(nickname) {
   const newPos = await getMyPosition(nickname);
 
   return newPos;
+}
+
+export async function getQueuePos(nickname){
+  const curPos = await getMyPosition(nickname);
+
+  if(!curPos){
+    throw new NotFoundUserError(`해당 닉네임을 가진 사용자가 대기열에 존재하지 않습니다.`);
+  }
+
+  return curPos;
 }
