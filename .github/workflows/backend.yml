@@ -4,19 +4,15 @@ on:
   push:
     branches: ["develop", "main"]
   pull_request:
-    branches: ["develop"]
+    branches: ["develop", "main"]
 
 permissions:
   contents: read
 
 jobs:
-  # CI: 테스트, 빌드, ECR 푸시 Job
-  ci-and-build:
+  # CI: Install & Test
+  ci:
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'develop' }} # develop 브랜치에서만 실행
-
-    environment: AWS
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -27,69 +23,64 @@ jobs:
           node-version: "20.x"
           cache: "npm"
 
-      - name: Install Dependencies & Run Tests
-        run: |
-          npm ci
-          npm test
+      - name: Install Dependencies
+        run: npm ci
 
-      # AWS 인증 및 ECR 로그인
+      - name: Run Tests
+        run: npm test
+
+  # CD: Build & Deploy (Only on main)
+  cd:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: AWS
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # Docker 빌드, 태그 지정, ECR 푸시
-      - name: Build and Push Image to ECR
+      - name: Build, Tag, and Push Image to ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          IMAGE_TAG: build-${{ github.run_number }} # 순차적 빌드 번호 사용
+          IMAGE_TAG: build-${{ github.run_number }}
         run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
+      - name: Download Task Definition
+        run: |
+          aws ecs describe-task-definition --task-definition tw-ecs-task --query taskDefinition > task-definition.json
 
-  # # CD: 운영 환경 배포 Job.
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: tw-backend-container
+          image: ${{ steps.build-image.outputs.image }}
 
-  # deploy-to-prod:
-  #   if: ${{ github.ref_name == 'main' }} # main 브랜치에서만 실행
-  #   runs-on: ubuntu-latest
-
-
-  #   environment: AWS
-
-
-  #   steps:
-  #     - name: Configure AWS Credentials (Prod)
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         # 운영 환경 Secrets 사용
-
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWSAWS_SECRET_ACCESS_KEY }}
-
-  #         aws-region: ${{ vars.AWS_REGION }}
-
-  #     - name: Login to Amazon ECR
-  #       id: login-ecr-prod
-  #       uses: aws-actions/amazon-ecr-login@v2
-
-  #     # ECS 서비스 업데이트 로직 실행
-  #     - name: Deploy ECS Service to Prod
-  #       env:
-  #         ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-  #         # ECR 이미지 URI 구성
-
-  #         IMAGE_URI: ${{ steps.login-ecr-prod.outputs.registry }}/${{ env.ECR_REPOSITORY }}: build-${{ github.run_number }}
-
-  #       run: |
-  #         echo "운영 환경 ECS 서비스 업데이트 로직 (aws ecs update-service) 실행"
-  #         echo "사용할 이미지: $IMAGE_URI"
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: tw-ticket-warrior-express-service
+          cluster: tw-ticket-warrior-cluster
+          wait-for-service-stability: true

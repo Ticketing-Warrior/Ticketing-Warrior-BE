@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { AppDataSource } from "./config/dataConfig.js";
 import express from "express";
 import cors from "cors";
 import swaggerAutogen from "swagger-autogen";
@@ -16,9 +17,9 @@ app.use(express.static("public")); // 정적 파일 접근
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 
-// AppDataSource.initialize()
-//   .then(() => console.log("Database Connected"))
-//   .catch((err) => console.error("DB Connection Failed", err));
+AppDataSource.initialize()
+  .then(() => console.log("✅ Database Connected"))
+  .catch((err) => console.error("❌ DB Connection Failed", err));
 
 app.use("/", routers);
 
@@ -64,7 +65,7 @@ app.get("/openapi.json", async (req, res, next) => {
 app.use(errorHandler);
 
 app.listen(port, "0.0.0.0", () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
 });
 
 //

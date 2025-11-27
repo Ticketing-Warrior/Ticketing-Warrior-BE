@@ -1,8 +1,8 @@
 import { EntitySchema } from "typeorm";
 
-export const History = new EntitySchema({
-  name: "History",
-  tableName: "history",
+export const Record = new EntitySchema({
+  name: "Record",
+  tableName: "record",
   columns: {
     id: {
       type: Number,
@@ -11,9 +11,10 @@ export const History = new EntitySchema({
     },
     duration: {
       type: Number,
+      nullable: false,
     },
     created_at: {
-      type: "timestamp",
+      type: "datetime",
       createDate: true,
     },
   },
