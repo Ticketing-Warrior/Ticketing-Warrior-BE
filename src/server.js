@@ -3,8 +3,8 @@ import express from "express";
 import cors from "cors";
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
-import { errorHandler } from './middlewares/errorHandler.js';
-import routers from './routes/routes.server.js';
+import { errorHandler } from "./middlewares/errorHandler.js";
+import routers from "./routes/routes.server.js";
 
 dotenv.config();
 
@@ -22,14 +22,21 @@ app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형
 
 app.use("/", routers);
 
+app.get("/", (req, res) => {
+  res.status(200).send("Server is healthy");
+});
+
 app.use(
   "/docs",
   swaggerUiExpress.serve,
-  swaggerUiExpress.setup({}, {
-    swaggerOptions: {
-      url: "/openapi.json",
-    },
-  })
+  swaggerUiExpress.setup(
+    {},
+    {
+      swaggerOptions: {
+        url: "/openapi.json",
+      },
+    }
+  )
 );
 
 app.get("/openapi.json", async (req, res, next) => {
@@ -38,12 +45,13 @@ app.get("/openapi.json", async (req, res, next) => {
     disableLogs: true,
     writeOutputFile: false,
   };
-  const outputFile = "/dev/null"; 
+  const outputFile = "/dev/null";
   const routes = ["./src/server.js"];
   const doc = {
     info: {
       title: "Ticketing Warrior",
-      description: "선착순 예매 실패를 경험한 사용자들이 피지컬과 순발력을 훈련할 수 있도록 설계된 고부하 티켓팅 시뮬레이션 플랫폼입니다.",
+      description:
+        "선착순 예매 실패를 경험한 사용자들이 피지컬과 순발력을 훈련할 수 있도록 설계된 고부하 티켓팅 시뮬레이션 플랫폼입니다.",
     },
     host: "localhost:3000",
   };
@@ -58,6 +66,5 @@ app.use(errorHandler);
 app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });
-
 
 //
