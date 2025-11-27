@@ -4,10 +4,10 @@ services:
     container_name: tw-mysql
     restart: unless-stopped
     environment:
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_PORT}:3306"
     volumes:
@@ -37,6 +37,7 @@ services:
       - "${REDIS_PORT}:6379"
     networks:
       - tw-network
+
   # 3. Express Backend
   backend:
     build:
@@ -50,7 +51,6 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
-
       DB_HOST: mysql
       DB_PORT: 3306
       REDIS_HOST: redis

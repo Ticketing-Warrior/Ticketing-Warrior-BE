@@ -1,4 +1,4 @@
-import { redisClient } from '../config/redisConfig.js';
+import { redisClient } from "../config/redisConfig.js";
 
 // 좌석 상태 조회
 export async function getAllSeats() {
@@ -43,4 +43,15 @@ export async function removeFromQueue(nickname) {
 // 세션 시작 시간 기록
 export async function setSessionStart(nickname) {
   await redisClient.set(`session:start:${nickname}`, Date.now());
+}
+
+// 세션 시작 시간 조회
+export async function getSessionStart(nickname) {
+  const startAt = await redisClient.get(`session:start:${nickname}`);
+  return startAt ? Number(startAt) : null;
+}
+
+// 세션 시작 시간 삭제
+export async function clearSessionStart(nickname) {
+  await redisClient.del(`session:start:${nickname}`);
 }
