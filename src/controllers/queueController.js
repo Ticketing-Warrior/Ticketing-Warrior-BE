@@ -1,6 +1,6 @@
 import { BadRequestError } from '../errors.js';
 import { successHandler } from '../middlewares/responseHandler.js';
-import { getQueuePos, insertQueue, getOutQueue } from '../services/queueService.js';
+import { getQueuePos, insertQueue, getOutQueue, seedSeats, getAllSeats } from '../services/queueService.js';
 
 export const handleInsertQueue = async (req, res, next) => {
     try {
@@ -40,6 +40,24 @@ export const handleGetOutQueue = async (req, res, next) => {
 
     await getOutQueue(nickname);
     return successHandler(res, `티켓팅 시작`, );
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleSeedSeats = async (req, res, next) => {
+  try {
+    await seedSeats();
+    return successHandler(res, "좌석 초기화 완료 (A1~A100)");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleGetSeats = async (req, res, next) => {
+  try {
+    const seats = await getAllSeats();
+    return successHandler(res, "좌석 정보 조회", seats);
   } catch (err) {
     next(err);
   }
