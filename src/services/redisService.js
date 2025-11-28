@@ -1,4 +1,4 @@
-import { redisClient } from "../config/redisConfig.js";
+import { redisClient } from "../redis/redisClient.js";
 
 // 좌석 상태 조회
 export async function getAllSeats() {

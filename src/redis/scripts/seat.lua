@@ -1,0 +1,70 @@
+-- seat.lua
+-- 단일 Lua 스크립트 내에서 command 기반으로 기능 분기
+
+-- KEYS, ARGV 구조
+-- ARGV[1] = command
+-- (command 별 args는 아래 설명 참고)
+
+
+local command = ARGV[1]
+
+--------------------------------------------------
+-- 1) 전체 좌석 조회
+--------------------------------------------------
+if command == "getAllSeats" then
+    return redis.call("HGETALL", KEYS[1])
+end
+
+--------------------------------------------------
+-- 2) 좌석 초기화 (sold/locked 제외)
+--------------------------------------------------
+if command == "resetSeats" then
+    local seats = redis.call("HGETALL", KEYS[1])
+    for i = 1, #seats, 2 do
+        local seatId = seats[i]
+        local status = seats[i + 1]
+
+        if status ~= "sold" and status ~= "locked" then
+            redis.call("HSET", KEYS[1], seatId, "available")
+        end
+    end
+    return "OK"
+end
+
+--------------------------------------------------
+-- 3) 좌석 초기 데이터 생성
+-- ARGV[2] = seatCount
+--------------------------------------------------
+if command == "seedSeats" then
+    local count = tonumber(ARGV[2])
+    for i = 1, count do
+        local id = "A" .. i
+        redis.call("HSET", KEYS[1], id, "available")
+    end
+    return "OK"
+end
+
+--------------------------------------------------
+-- 4) 좌석 락(lock) + TTL
+-- ARGV[2] = seatId
+-- ARGV[3] = userId
+-- ARGV[4] = ttlSeconds
+--------------------------------------------------
+if command == "lockSeat" then
+    local seatId = ARGV[2]
+    local userId = ARGV[3]
+    local ttl = tonumber(ARGV[4])
+
+    local status = redis.call("HGET", KEYS[1], seatId)
+
+    if status ~= "available" then
+        return 0
+    end
+
+    redis.call("HSET", KEYS[1], seatId, "locked")
+    redis.call("SET", "seat:lock:" .. seatId, userId, "EX", ttl)
+
+    return 1
+end
+
+return "UNKNOWN_COMMAND"

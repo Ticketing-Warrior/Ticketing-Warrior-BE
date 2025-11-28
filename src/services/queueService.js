@@ -1,42 +1,64 @@
 import { ExistsError, NotFoundUserError } from '../errors.js';
-import { addToQueue, getMyPosition, resetSeats, removeFromQueue, getAllSeats, setSessionStart, seedSeats } from "../services/redisService.js";
-
+import { getAllSeats, seedSeats } from "../services/redisService.js";
 export { seedSeats, getAllSeats };
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { redisClient } from '../redis/redisClient.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const queueScriptPath = path.resolve(__dirname, "../redis/scripts/queue.lua");
+const queueScript = fs.readFileSync(queueScriptPath, "utf8");
+
+function runQueueScript(keys, args) {
+  return redisClient.eval(queueScript, keys.length, ...keys, ...args);
+}
+
+// 대기열 진입
 export async function insertQueue(nickname) {
-  console.log(`대기열 진입`);
+  console.log(`대기열 진입: ${nickname}`);
 
-  const curPos = await getMyPosition(nickname);
-  if(curPos){
-    throw new ExistsError('해당 닉네임을 가진 사용자가 이미 대기열에 존재합니다.');
+  // 이미 있는지 확인
+  const curPos = await runQueueScript(["ticketQueue"], ["getMyPosition", nickname]);
+
+  if (curPos !== -1) {
+    throw new ExistsError("해당 닉네임을 가진 사용자가 이미 대기열에 존재합니다.");
   }
 
-  await setSessionStart(nickname); // 타이머 시작
-  await addToQueue(nickname); // 대기열에 넣기
+  // 세션 시작 시간 기록
+  await runQueueScript([], ["setSessionStart", nickname, Date.now()]);
 
-  const newPos = await getMyPosition(nickname);
+  // 대기열에 추가
+  await runQueueScript(["ticketQueue"], ["addToQueue", nickname]);
 
-  return newPos;
+  // 새 순번 확인
+  const newPos = await runQueueScript(["ticketQueue"], ["getMyPosition", nickname]);
+
+  return newPos + 1; // 사람이 보는 번호(1부터)
 }
 
-// 대기열 존재 X 호출되는 API
-export async function getOutQueue(nickname) { 
+// 대기열에서 제거
+export async function getOutQueue(nickname) {
+  const curPos = await runQueueScript(["ticketQueue"], ["getMyPosition", nickname]);
 
-  const curPos = await getMyPosition(nickname);
-  if(!curPos){
-    throw new NotFoundUserError('해당 닉네임을 가진 사용자가 대기열에 존재하지 않습니다.');
+  if (curPos === -1) {
+    throw new NotFoundUserError("해당 닉네임을 가진 사용자가 대기열에 존재하지 않습니다.");
   }
 
-  // 대기열에서 자신 제거
-  await removeFromQueue(nickname);
+  await runQueueScript(["ticketQueue"], ["removeFromQueue", nickname]);
 }
 
-export async function getQueuePos(nickname){
-  const curPos = await getMyPosition(nickname);
+// 순번 조회
+export async function getQueuePos(nickname) {
+  const curPos = await runQueueScript(["ticketQueue"], ["getMyPosition", nickname]);
 
-  if(!curPos){
-    throw new NotFoundUserError(`해당 닉네임을 가진 사용자가 대기열에 존재하지 않습니다.`);
+  if (curPos === -1) {
+    throw new NotFoundUserError(
+      `해당 닉네임을 가진 사용자가 대기열에 존재하지 않습니다.`
+    );
   }
 
-  return curPos;
+  return curPos + 1;
 }

@@ -1,4 +1,4 @@
-import { saveRecord, calculateRankPercentile } from "../models/recordModel.js";
+import { saveRecord, calculateRankPercentile } from "./dbService.js";
 import { getSessionStart, clearSessionStart, lockSeat } from "./redisService.js";
 import { BadRequestError } from "../errors.js";
 

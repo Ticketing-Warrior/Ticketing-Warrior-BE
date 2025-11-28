@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { AppDataSource } from "./config/dataConfig.js";
+import { AppDataSource } from "./db.config.js";
 import express from "express";
 import cors from "cors";
 import swaggerAutogen from "swagger-autogen";
