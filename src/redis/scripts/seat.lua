@@ -11,7 +11,7 @@ if command == "getAllSeats" then
 end
 
 --------------------------------------------------
--- 2) 좌석 초기화 (sold/locked 제외)
+-- 2) 좌석 초기화 (lock 제외)
 --------------------------------------------------
 if command == "resetSeats" then
     local seats = redis.call("HGETALL", KEYS[1])
@@ -19,7 +19,7 @@ if command == "resetSeats" then
         local seatId = seats[i]
         local status = seats[i + 1]
 
-        if status ~= "sold" and status ~= "locked" then
+        if status ~= "lock" then
             redis.call("HSET", KEYS[1], seatId, "available")
         end
     end
@@ -40,15 +40,11 @@ if command == "seedSeats" then
 end
 
 --------------------------------------------------
--- 4) 좌석 락(lock) + TTL
+-- 4) 좌석 락(lock)
 -- ARGV[2] = seatId
--- ARGV[3] = userId
--- ARGV[4] = ttlSeconds
 --------------------------------------------------
 if command == "lockSeat" then
     local seatId = ARGV[2]
-    local userId = ARGV[3]
-    local ttl = tonumber(ARGV[4])
 
     local status = redis.call("HGET", KEYS[1], seatId)
 
@@ -56,8 +52,7 @@ if command == "lockSeat" then
         return 0
     end
 
-    redis.call("HSET", KEYS[1], seatId, "locked")
-    redis.call("SET", "seat:lock:" .. seatId, userId, "EX", ttl)
+    redis.call("HSET", KEYS[1], seatId, "lock")
 
     return 1
 end
@@ -70,6 +65,26 @@ if command == "getSingleSeat" then
     local seatId = ARGV[2]
     local status = redis.call("HGET", KEYS[1], seatId)
     return status -- 존재하지 않으면 nil 반환
+end
+
+--------------------------------------------------
+-- 6) 좌석 락 해제(available)
+-- ARGV[2] = seatId
+-- ARGV[3] = userId
+-- ARGV[4] = ttlSeconds
+--------------------------------------------------
+if command == "ableSeat" then
+    local seatId = ARGV[2]
+
+    local status = redis.call("HGET", KEYS[1], seatId)
+
+    if status ~= "lock" then
+        return 0
+    end
+
+    redis.call("HSET", KEYS[1], seatId, "available")
+
+    return 1
 end
 
 return "UNKNOWN_COMMAND"
