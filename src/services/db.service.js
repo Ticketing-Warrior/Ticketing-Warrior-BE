@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/dataConfig.js";
+import { AppDataSource } from "../db.config.js";
 import { Record } from "../entities/Record.js";
 
 const recordRepository = AppDataSource.getRepository(Record);
