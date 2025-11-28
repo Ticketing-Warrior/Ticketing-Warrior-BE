@@ -6,6 +6,12 @@ export async function getAllSeats() {
   return await redisClient.hgetall("seats");
 }
 
+export async function getASeat(seatId) {
+  const seatState = await redisClient.hget("seats", seatId);
+  console.log(seatState);
+  return seatState;
+}
+
 // 좌석 초기화 (sold 좌석은 유지)
 export async function resetSeats() {
   const seats = await getAllSeats();
@@ -76,3 +82,5 @@ export async function getSessionStart(nickname) {
 export async function clearSessionStart(nickname) {
   await redisClient.del(`session:start:${nickname}`);
 }
+
+
