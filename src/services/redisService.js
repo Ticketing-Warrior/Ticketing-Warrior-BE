@@ -20,6 +20,15 @@ export async function resetSeats() {
   await pipeline.exec();
 }
 
+// 좌석 초기 데이터 생성
+export async function seedSeats(count = 100) {
+  const pipeline = redisClient.pipeline();
+  for (let i = 1; i <= count; i++) {
+    pipeline.hset("seats", `A${i}`, "available");
+  }
+  await pipeline.exec();
+}
+
 // 좌석 점유 (TTL 적용)
 export async function lockSeat(seatId, userId, ttlSeconds = 30) {
   const status = await redisClient.hget("seats", seatId);

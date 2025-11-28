@@ -1,5 +1,7 @@
 import { ExistsError, NotFoundUserError } from '../errors.js';
-import { addToQueue, getMyPosition, resetSeats, removeFromQueue, getAllSeats, setSessionStart } from "../services/redisService.js";
+import { addToQueue, getMyPosition, resetSeats, removeFromQueue, getAllSeats, setSessionStart, seedSeats } from "../services/redisService.js";
+
+export { seedSeats, getAllSeats };
 
 export async function insertQueue(nickname) {
   console.log(`대기열 진입`);
