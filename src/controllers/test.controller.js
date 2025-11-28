@@ -1,5 +1,5 @@
 import { successHandler } from '../middlewares/responseHandler.js';
-import { getAllSeats, seedSeats } from '../services/testService.js';
+import { getAllSeats, seedSeats } from '../services/test.service.js';
 
 export const handleSeedSeats = async (req, res, next) => {
   try {
