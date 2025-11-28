@@ -53,6 +53,18 @@ export async function changeSeatState (seatId, state) {
     throw new NotFoundError("존재하지 않는 상태값입니다.");
   }
 
-  return { seatId, state}
+  return { seatId, state };
+}
 
+export async function getAllSeats() {
+  // KEYS[1] = "seats", ARGV[1] = "getAllSeats"
+  const result = await runSeatScript(["seats"], ["getAllSeats"]);
+
+  // Lua HGETALL 반환 형식: [key1, value1, key2, value2, ...]
+  const seats = {};
+  for (let i = 0; i < result.length; i += 2) {
+    seats[result[i]] = result[i + 1];
+  }
+
+  return seats;
 }
