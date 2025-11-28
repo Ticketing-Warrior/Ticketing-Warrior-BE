@@ -1,8 +1,15 @@
 import { saveRecord, calculateRankPercentile } from "../models/recordModel.js";
-import { getSessionStart, clearSessionStart } from "./redisService.js";
+import { getSessionStart, clearSessionStart, lockSeat } from "./redisService.js";
 import { BadRequestError } from "../errors.js";
 
-export async function processBookingConfirmation(nickname) {
+
+export async function processBookingConfirmation(nickname, seatId) {
+  // 좌석 선점 시도
+  const isLocked = await lockSeat(seatId, nickname, 30); // 30초 락
+  if (!isLocked) {
+    throw new BadRequestError("이미 선택되었거나 예매된 좌석입니다.");
+  }
+
   const sessionStart = await getSessionStart(nickname);
 
   if (!sessionStart) {
