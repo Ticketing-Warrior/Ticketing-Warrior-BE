@@ -1,6 +1,6 @@
 import { BadRequestError } from '../errors.js';
 import { successHandler } from '../middlewares/responseHandler.js';
-import { getQueuePos, insertQueue } from '../services/queueService.js';
+import { getQueuePos, insertQueue, getOutQueue } from '../services/queueService.js';
 
 export const handleInsertQueue = async (req, res, next) => {
     try {
@@ -29,3 +29,18 @@ export const handleGetQueuePos = async (req, res, next) => {
         next(err);
     }
 }
+
+export const handleGetOutQueue = async (req, res, next) => {
+  try {
+    const nickname = req.body?.nickname;
+
+    if (!nickname || nickname === undefined) {
+      throw new BadRequestError("닉네임을 확인 후, 다시 이용해주세요.");
+    }
+
+    await getOutQueue(nickname);
+    return successHandler(res, `티켓팅 시작`, );
+  } catch (err) {
+    next(err);
+  }
+};
