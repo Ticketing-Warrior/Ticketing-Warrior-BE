@@ -23,3 +23,16 @@ export async function getSingleSeat(seatId) {
 
   return result;
 }
+
+export async function getAllSeats() {
+  // KEYS[1] = "seats", ARGV[1] = "getAllSeats"
+  const result = await runSeatScript(["seats"], ["getAllSeats"]);
+
+  // Lua HGETALL 반환 형식: [key1, value1, key2, value2, ...]
+  const seats = {};
+  for (let i = 0; i < result.length; i += 2) {
+    seats[result[i]] = result[i + 1];
+  }
+
+  return seats;
+}

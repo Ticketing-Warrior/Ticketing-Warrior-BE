@@ -1,5 +1,5 @@
 import { successHandler } from '../middlewares/responseHandler.js';
-import { getSingleSeat } from '../services/seat.service.js'
+import { getSingleSeat, getAllSeats } from '../services/seat.service.js'
 
 export async function handleSingleSeat(req,res,next) {
     try{
@@ -15,3 +15,12 @@ export async function handleSingleSeat(req,res,next) {
         next(err);
     }
 }
+
+export const handleGetSeats = async (req, res, next) => {
+  try {
+    const seats = await getAllSeats();
+    return successHandler(res, "좌석 정보 조회", seats);
+  } catch (err) {
+    next(err);
+  }
+};
