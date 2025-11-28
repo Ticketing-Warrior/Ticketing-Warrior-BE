@@ -10,7 +10,7 @@ export async function insertQueue(nickname) {
   }
 
   await setSessionStart(nickname); // 타이머 시작
-  await addToQueue(nickname); // 대기엘에 넣기
+  await addToQueue(nickname); // 대기열에 넣기
 
   const newPos = await getMyPosition(nickname);
 
