@@ -1,11 +1,6 @@
 -- seat.lua
 -- 단일 Lua 스크립트 내에서 command 기반으로 기능 분기
 
--- KEYS, ARGV 구조
--- ARGV[1] = command
--- (command 별 args는 아래 설명 참고)
-
-
 local command = ARGV[1]
 
 --------------------------------------------------
@@ -65,6 +60,16 @@ if command == "lockSeat" then
     redis.call("SET", "seat:lock:" .. seatId, userId, "EX", ttl)
 
     return 1
+end
+
+--------------------------------------------------
+-- 5) 단일 좌석 상태 조회
+-- ARGV[2] = seatId
+--------------------------------------------------
+if command == "getSingleSeat" then
+    local seatId = ARGV[2]
+    local status = redis.call("HGET", KEYS[1], seatId)
+    return status -- 존재하지 않으면 nil 반환
 end
 
 return "UNKNOWN_COMMAND"
