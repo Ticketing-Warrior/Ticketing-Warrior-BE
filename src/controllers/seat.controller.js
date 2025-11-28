@@ -1,5 +1,5 @@
 import { successHandler } from '../middlewares/responseHandler.js';
-import { getSingleSeat } from '../services/seatService.js'
+import { getSingleSeat } from '../services/seat.service.js'
 
 export async function handleSingleSeat(req,res,next) {
     try{

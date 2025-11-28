@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleSingleSeat } from "../controllers/seatController.js";
+import { handleSingleSeat } from "../controllers/seat.controller.js";
 
 const router = Router();
 

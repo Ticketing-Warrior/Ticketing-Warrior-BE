@@ -1,6 +1,4 @@
 import { ExistsError, NotFoundUserError } from '../errors.js';
-import { getAllSeats, seedSeats } from "../services/redisService.js";
-export { seedSeats, getAllSeats };
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

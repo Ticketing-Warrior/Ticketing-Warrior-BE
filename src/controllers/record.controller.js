@@ -1,4 +1,4 @@
-import { processBookingConfirmation } from "../services/recordService.js";
+import { processBookingConfirmation } from "../services/record.service.js";
 import { BadRequestError } from "../errors.js";
 import { successHandler } from "../middlewares/responseHandler.js";
 
