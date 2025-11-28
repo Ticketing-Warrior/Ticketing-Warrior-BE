@@ -23,10 +23,6 @@ AppDataSource.initialize()
 
 app.use("/", routers);
 
-app.get("/", (req, res) => {
-  res.status(200).send("Server is healthy");
-});
-
 app.use(
   "/docs",
   swaggerUiExpress.serve,

@@ -1,5 +1,5 @@
 # 1. Build Stage
-FROM node:20-slim as builder
+FROM node:20-alpine as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 
 
 # 2. Runtime Stage
-FROM node:20-slim
+FROM node:20-alpine
 
 WORKDIR /app
 
