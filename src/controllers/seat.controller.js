@@ -7,7 +7,7 @@ export async function handleSingleSeat(req,res,next) {
         const seatId = req.query.seatId;
 
         if (!seatId || seatId === undefined) {
-            throw new BadRequestError("닉네임을 확인 후, 다시 이용해주세요.");
+            throw new BadRequestError("좌석 번호를 확인 후, 다시 이용해주세요.");
         }
         const seatState = await getSingleSeat(seatId);
         return successHandler(res, "단일 좌석 상태 조회에 성공했습니다.", {seatState} );

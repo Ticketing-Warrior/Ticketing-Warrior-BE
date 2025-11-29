@@ -33,8 +33,7 @@ export async function getAllSeats() {
  * 좌석 초기 데이터 생성 (seed)
  * @param {number} count
  */
-export async function seedSeats(count = 100) {
-  // KEYS[1] = "seats", ARGV[1] = "seedSeats", ARGV[2] = count
-  await runSeatScript(["seats"], ["seedSeats", count]);
+export async function seedSeats(rows=10, cols=10) {
+  await runSeatScript(["seats"], ["seedSeats", rows,cols]);
   return "OK";
 }
