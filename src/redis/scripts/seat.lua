@@ -27,12 +27,28 @@ if command == "resetSeats" then
 end
 
 --------------------------------------------------
--- 3) 좌석 초기 데이터 생성
--- ARGV[2] = seatCount
+-- 2-1) 전체 좌석 초기화 (모든 좌석을 available로)
+--------------------------------------------------
+if command == "resetAllSeats" then
+    local seats = redis.call("HGETALL", KEYS[1])
+    for i = 1, #seats, 2 do
+        local seatId = seats[i]
+        redis.call("HSET", KEYS[1], seatId, "available")
+    end
+    return "OK"
+end
+
+--------------------------------------------------
+-- 3) 좌석 초기 데이터 생성 (기존 좌석 삭제 후 새로 생성)
+-- ARGV[2] = rows (행 개수)
+-- ARGV[3] = cols (열 개수)
 --------------------------------------------------
 if command == "seedSeats" then
-    local rows = tonumber(ARGV[2])   -- row count (A,B,C...)
-    local cols = tonumber(ARGV[3])   -- seat count per row
+    -- 기존 좌석 데이터 모두 삭제
+    redis.call("DEL", KEYS[1])
+    
+    local rows = tonumber(ARGV[2])
+    local cols = tonumber(ARGV[3])
 
     for r = 1, rows do
         local rowLetter = string.char(64 + r)  -- 1→A, 2→B, 3→C ...
