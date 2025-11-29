@@ -7,6 +7,8 @@ export async function confirmBooking(req, res, next) {
   try {
     const { nickname, seatId } = req.body;
 
+    console.log(nickname, seatId);
+
     if (!nickname || typeof nickname !== "string") {
       throw new BadRequestError("유효하지 않은 닉네임입니다.");
     }

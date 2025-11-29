@@ -55,6 +55,7 @@ end
 --------------------------------------------------
 if command == "setSessionStart" then
     local nickname = ARGV[2]
+    
     return redis.call("SET", "session:start:" .. nickname, ARGV[3])
 end
 
