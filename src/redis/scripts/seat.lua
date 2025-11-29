@@ -31,13 +31,20 @@ end
 -- ARGV[2] = seatCount
 --------------------------------------------------
 if command == "seedSeats" then
-    local count = tonumber(ARGV[2])
-    for i = 1, count do
-        local id = "A" .. i
-        redis.call("HSET", KEYS[1], id, "available")
+    local rows = tonumber(ARGV[2])   -- row count (A,B,C...)
+    local cols = tonumber(ARGV[3])   -- seat count per row
+
+    for r = 1, rows do
+        local rowLetter = string.char(64 + r)  -- 1→A, 2→B, 3→C ...
+        for c = 1, cols do
+            local id = rowLetter .. c
+            redis.call("HSET", KEYS[1], id, "available")
+        end
     end
+
     return "OK"
 end
+
 
 --------------------------------------------------
 -- 4) 좌석 락(lock)
