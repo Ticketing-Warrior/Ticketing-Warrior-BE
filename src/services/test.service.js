@@ -34,7 +34,6 @@ export async function getAllSeats() {
  * @param {number} count
  */
 export async function seedSeats(count = 100) {
-  // KEYS[1] = "seats", ARGV[1] = "seedSeats", ARGV[2] = count
   await runSeatScript(["seats"], ["seedSeats", count]);
   return "OK";
 }
