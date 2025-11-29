@@ -50,31 +50,24 @@ if command == "getMyPosition" then
 end
 
 --------------------------------------------------
--- 5) 세션 시작 시간 기록
--- ARGV[2] = nickname
+-- 5) 대기열 초기화
 --------------------------------------------------
-if command == "setSessionStart" then
-    local nickname = ARGV[2]
-    
-    return redis.call("SET", "session:start:" .. nickname, ARGV[3])
+if command == "clearQueue" then
+    return redis.call("DEL", KEYS[1])
 end
 
 --------------------------------------------------
--- 6) 세션 조회
--- ARGV[2] = nickname
+-- 6) 사이클 시작 시간 설정 (초기화 시간)
 --------------------------------------------------
-if command == "getSessionStart" then
-    local nickname = ARGV[2]
-    return redis.call("GET", "session:start:" .. nickname)
+if command == "setCycleStartTime" then
+    return redis.call("SET", "cycle:start:time", ARGV[2])
 end
 
 --------------------------------------------------
--- 7) 세션 삭제
--- ARGV[2] = nickname
+-- 7) 사이클 시작 시간 조회 (초기화 시간)
 --------------------------------------------------
-if command == "clearSessionStart" then
-    local nickname = ARGV[2]
-    return redis.call("DEL", "session:start:" .. nickname)
+if command == "getCycleStartTime" then
+    return redis.call("GET", "cycle:start:time")
 end
 
 return "UNKNOWN_COMMAND"

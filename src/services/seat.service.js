@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { redisClient } from '../redis/redisClient.js';
-import { ExistsError, NotFoundError } from '../errors.js';
+import { redisClient } from "../redis/redisClient.js";
+import { ExistsError, NotFoundError } from "../errors.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,41 +15,39 @@ async function runSeatScript(keys = [], args = []) {
 }
 
 export async function getSingleSeat(seatId) {
-  const result = await runSeatScript(['seats'], ['getSingleSeat', seatId]);
+  const result = await runSeatScript(["seats"], ["getSingleSeat", seatId]);
 
   if (!result) {
-    throw new NotFoundError('존재하지 않는 좌석입니다.');
+    throw new NotFoundError("존재하지 않는 좌석입니다.");
   }
 
   return result;
 }
 
-export async function changeSeatState (seatId, state) {
+export async function changeSeatState(seatId, state) {
   console.log(seatId, state);
   console.log(`seatId = ${seatId}`, typeof seatId);
-  const isExist = await runSeatScript(['seats'], ['getSingleSeat', seatId]);
+  const isExist = await runSeatScript(["seats"], ["getSingleSeat", seatId]);
 
   console.log(isExist);
-  if(!isExist){
-    throw new NotFoundError('존재하지 않는 좌석입니다.');
+  if (!isExist) {
+    throw new NotFoundError("존재하지 않는 좌석입니다.");
   }
 
   let result = null;
-  if(state === "lock"){
-     result = await runSeatScript(['seats'], ['lockSeat', seatId]);
+  if (state === "lock") {
+    result = await runSeatScript(["seats"], ["lockSeat", seatId]);
 
-    if(!result){
-      throw new ExistsError("이미 판매된 좌석입니다.");
+    if (!result) {
+      throw new ExistsError("이미 예매된 좌석입니다.");
     }
+  } else if (state === "available") {
+    result = await runSeatScript(["seats"], ["ableSeat", seatId]);
 
-  }else if(state === "available"){
-    result = await runSeatScript(['seats'], ['ableSeat', seatId]);
-
-    if(!result){
+    if (!result) {
       throw new ExistsError("이미 선택 해제된 좌석입니다.");
     }
-
-  }else{
+  } else {
     throw new NotFoundError("존재하지 않는 상태값입니다.");
   }
 
@@ -67,4 +65,16 @@ export async function getAllSeats() {
   }
 
   return seats;
+}
+
+// 전체 좌석 초기화 (모든 좌석을 available로 변경)
+export async function resetAllSeats() {
+  await runSeatScript(["seats"], ["resetAllSeats"]);
+  return "OK";
+}
+
+// 좌석 초기 데이터 생성 (기존 좌석 삭제 후 새로 생성)
+export async function seedSeats(rows = 10, cols = 10) {
+  await runSeatScript(["seats"], ["seedSeats", String(rows), String(cols)]);
+  return "OK";
 }

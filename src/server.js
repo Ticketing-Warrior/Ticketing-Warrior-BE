@@ -6,6 +6,7 @@ import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import routers from "./routes/routes.server.js";
+import { startScheduler } from "./services/scheduler.service.js";
 
 dotenv.config();
 
@@ -18,8 +19,11 @@ app.use(express.json()); // request의 본문을 json으로 해석할 수 있도
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 
 AppDataSource.initialize()
-  .then(() => console.log("✅ Database Connected"))
-  .catch((err) => console.error("❌ DB Connection Failed", err));
+  .then(() => {
+		console.log("✅ Database Connection Success");
+    startScheduler();
+  })
+  .catch((err) => console.error("DB Connection Failed", err));
 
 app.use("/", routers);
 
