@@ -81,6 +81,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: tw-ticket-warrior-express-service
+          service: ticketing-warrior-service
           cluster: tw-ticket-warrior-cluster
           wait-for-service-stability: true
