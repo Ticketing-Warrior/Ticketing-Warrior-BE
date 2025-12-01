@@ -88,8 +88,8 @@ jobs:
         id: network-config
         run: |
           # Fetch Private App Subnets from tw-vpc-infra stack
-          SUBNET_1=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='TW-PrivateAppSubnet-1'].OutputValue" --output text)
-          SUBNET_2=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='TW-PrivateAppSubnet-2'].OutputValue" --output text)
+          SUBNET_1=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='PrivateAppSubnet1'].OutputValue" --output text)
+          SUBNET_2=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='PrivateAppSubnet2'].OutputValue" --output text)
           
           # Fetch ECS Security Group from tw-security-groups stack
           SECURITY_GROUP=$(aws cloudformation describe-stacks --stack-name tw-security-groups --query "Stacks[0].Outputs[?OutputKey=='TW-SG-ECS-ID'].OutputValue" --output text)
