@@ -50,3 +50,14 @@ export const getBotStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const enableTestModeController = (req, res) => {
+  botManager.enableTestMode();
+  return successHandler(res, "봇 테스트 모드 활성화" );
+};
+
+export const disableTestModeController = (req, res) => {
+  botManager.disableTestMode();
+  return successHandler(res, "봇 테스트 모드 비활성화" );
+};

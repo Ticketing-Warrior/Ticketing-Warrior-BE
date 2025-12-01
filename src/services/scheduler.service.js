@@ -56,9 +56,12 @@ async function resetAllSeatsAndSessions() {
     console.log("[스케줄러] 대기열 초기화 완료");
 
     // 5. 봇 시스템 자동 시작
-    botManager.start();
-    console.log("[스케줄러] 봇 시스템 자동 시작 완료");
-
+    if(botManager.isTestMode){
+      console.log("[스케줄러] 봇 테스트 모드 - 정지");
+    }else{
+      botManager.start();
+      console.log("[스케줄러] 봇 시스템 자동 시작 완료");
+    }
     console.log("[스케줄러] 초기화 작업 완료");
   } catch (error) {
     console.error("[스케줄러] 초기화 작업 실패:", error.message);
