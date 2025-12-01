@@ -1,14 +1,13 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { Table } from "typeorm";
 
-export class InitialSchema1764574767830 implements MigrationInterface {
+export class InitialSchema1764574767830 {
     name = 'InitialSchema1764574767830'
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    async up(queryRunner) {
         await queryRunner.query(`CREATE TABLE \`record\` (\`id\` int NOT NULL AUTO_INCREMENT, \`duration\` int NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
         await queryRunner.query(`DROP TABLE \`record\``);
     }
-
 }
