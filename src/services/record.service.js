@@ -58,3 +58,23 @@ export async function processBookingConfirmation(seatId) {
     createdAt: savedRecord.created_at,
   };
 }
+
+export async function botBookingConfirmation(seatId) {
+  // 1) 좌석 락(lock) 시도
+  const isLocked = await runSeatScript(["seats"], ["lockSeat", seatId]);
+  if (isLocked === 0) {
+    throw new BadRequestError("이미 선택되었거나 예매된 좌석입니다.");
+  }
+  // 2) 사이클 시작 시간 조회 (초기화 시간)
+  const cycleStartTime = await runLuaScript(
+    queueScript,
+    [],
+    ["getCycleStartTime"]
+  );
+
+  if (!cycleStartTime) {
+    throw new BadRequestError("사이클 시작 정보가 없습니다.");
+  }
+
+  return ;
+}

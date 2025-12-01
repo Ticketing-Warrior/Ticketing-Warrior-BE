@@ -1,6 +1,6 @@
 import { insertQueue, getOutQueue } from "./queue.service.js";
 import { getAllSeats } from "./seat.service.js";
-import { processBookingConfirmation } from "./record.service.js";
+import { botBookingConfirmation, processBookingConfirmation } from "./record.service.js";
 
 // 봇 매니저 - 모든 봇의 상태와 동작을 관리
 class BotManager {
@@ -127,9 +127,9 @@ class BotManager {
 
       // 4단계: 예매 확정
       try {
-        const result = await processBookingConfirmation(randomSeatId);
+       await botBookingConfirmation(randomSeatId);
         console.log(
-          `봇 ${bot.nickname} 예매 성공: 좌석: ${randomSeatId}, 소요시간: ${result.duration}초`
+          `봇 ${bot.nickname} 예매 성공: 좌석: ${randomSeatId}`
         );
       } catch (error) {
         // 다른 봇 또는 사용자가 예매를 먼저 했을 경우 에러 처리

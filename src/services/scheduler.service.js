@@ -3,7 +3,6 @@ import { runLuaScript } from "../redis/runLuaScript.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { redisClient } from "../redis/redisClient.js";
 import { botManager } from "./bot.service.js";
 import { getAllSeats, seedSeats, resetAllSeats } from "./seat.service.js";
 
@@ -12,13 +11,6 @@ const __dirname = path.dirname(__filename);
 
 const queueScriptPath = path.resolve(__dirname, "../redis/scripts/queue.lua");
 const queueScript = fs.readFileSync(queueScriptPath, "utf8");
-
-const seatScriptPath = path.resolve(__dirname, "../redis/scripts/seat.lua");
-const seatScript = fs.readFileSync(seatScriptPath, "utf8");
-
-function runSeatScript(keys = [], args = []) {
-  return redisClient.eval(seatScript, keys.length, ...keys, ...args);
-}
 
 // 모든 좌석 초기화, 대기열 초기화, 사이클 시작 시간 설정, 봇 재시작
 async function resetAllSeatsAndSessions() {
