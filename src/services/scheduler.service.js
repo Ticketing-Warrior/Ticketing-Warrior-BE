@@ -3,7 +3,6 @@ import { runLuaScript } from "../redis/runLuaScript.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { redisClient } from "../redis/redisClient.js";
 import { botManager } from "./bot.service.js";
 import { getAllSeats, seedSeats, resetAllSeats } from "./seat.service.js";
 
@@ -12,13 +11,6 @@ const __dirname = path.dirname(__filename);
 
 const queueScriptPath = path.resolve(__dirname, "../redis/scripts/queue.lua");
 const queueScript = fs.readFileSync(queueScriptPath, "utf8");
-
-const seatScriptPath = path.resolve(__dirname, "../redis/scripts/seat.lua");
-const seatScript = fs.readFileSync(seatScriptPath, "utf8");
-
-function runSeatScript(keys = [], args = []) {
-  return redisClient.eval(seatScript, keys.length, ...keys, ...args);
-}
 
 // 모든 좌석 초기화, 대기열 초기화, 사이클 시작 시간 설정, 봇 재시작
 async function resetAllSeatsAndSessions() {
@@ -64,9 +56,12 @@ async function resetAllSeatsAndSessions() {
     console.log("[스케줄러] 대기열 초기화 완료");
 
     // 5. 봇 시스템 자동 시작
-    botManager.start();
-    console.log("[스케줄러] 봇 시스템 자동 시작 완료");
-
+    if(botManager.isTestMode){
+      console.log("[스케줄러] 봇 테스트 모드 - 정지");
+    }else{
+      botManager.start();
+      console.log("[스케줄러] 봇 시스템 자동 시작 완료");
+    }
     console.log("[스케줄러] 초기화 작업 완료");
   } catch (error) {
     console.error("[스케줄러] 초기화 작업 실패:", error.message);

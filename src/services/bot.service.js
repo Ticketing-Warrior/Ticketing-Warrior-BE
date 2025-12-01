@@ -1,11 +1,12 @@
 import { insertQueue, getOutQueue } from "./queue.service.js";
 import { getAllSeats } from "./seat.service.js";
-import { processBookingConfirmation } from "./record.service.js";
+import { botBookingConfirmation, processBookingConfirmation } from "./record.service.js";
 
 // 봇 매니저 - 모든 봇의 상태와 동작을 관리
 class BotManager {
   constructor() {
     this.bots = new Map();
+    this.isEnabled = false;
     this.isEnabled = false;
     this.config = {
       botCount: 50, // 기본 봇 수
@@ -14,8 +15,30 @@ class BotManager {
     };
   }
 
+  // 부하테스트 모드 (봇 정지)
+  enableTestMode() {
+    console.log("[BotManager] 테스트 모드 활성화 (봇 중지)");
+    this.isTestMode = true;
+    this.stop();
+  }
+
+  // 부하테스트 모드 (봇 활성화)
+  disableTestMode() {
+    console.log("[BotManager] 테스트 모드 해제 (봇 재실행)");
+    this.isTestMode = false;
+    // 테스트 모드 해제되면 다시 정상 실행
+    this.start();
+  }
+
+
   // 봇 시스템 시작
   start(botCount = null, config = {}) {
+
+    // 테스트 모드면 봇 실행 X
+    if (this.isTestMode) {
+      return;
+    }
+
     // 이미 실행 중이면 중지 후 재시작
     if (this.isEnabled) {
       this.stop();
@@ -84,7 +107,7 @@ class BotManager {
 
   // 봇의 한 사이클 실행 (대기열 진입 -> 좌석 선택 -> 예매 확정)
   async runBotCycle(bot) {
-    if (!this.isEnabled || !bot.isActive) {
+    if (!this.isEnabled || !bot.isActive || this.isTestMode) {
       return;
     }
 
@@ -127,9 +150,9 @@ class BotManager {
 
       // 4단계: 예매 확정
       try {
-        const result = await processBookingConfirmation(randomSeatId);
+       await botBookingConfirmation(randomSeatId);
         console.log(
-          `봇 ${bot.nickname} 예매 성공: 좌석: ${randomSeatId}, 소요시간: ${result.duration}초`
+          `봇 ${bot.nickname} 예매 성공: 좌석: ${randomSeatId}`
         );
       } catch (error) {
         // 다른 봇 또는 사용자가 예매를 먼저 했을 경우 에러 처리

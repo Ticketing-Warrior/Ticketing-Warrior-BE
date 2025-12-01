@@ -3,6 +3,8 @@ import {
   startBots,
   stopBots,
   getBotStatus,
+  enableTestModeController,
+  disableTestModeController
 } from "../controllers/bot.controller.js";
 
 const router = Router();
@@ -15,5 +17,11 @@ router.post("/stop", stopBots);
 
 // 봇 시스템 상태 조회
 router.get("/status", getBotStatus);
+
+// 테스트 모드 ON
+router.post("/test/on", enableTestModeController);
+
+// 테스트 모드 OFF
+router.post("/test/off", disableTestModeController);
 
 export default router;
