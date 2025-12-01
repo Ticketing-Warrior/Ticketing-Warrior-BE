@@ -11,7 +11,8 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: process.env.NODE_ENV !== 'production', // 개발단계에서만 true!!
+  // synchronize: process.env.NODE_ENV !== 'production', // 개발단계에서만 true!!
+  synchronize: true,
   logging: false,
   entities: [Record],
 	migrations: process.argv.some(arg => arg.includes('ts-node') || arg.includes('migration:run')) 
