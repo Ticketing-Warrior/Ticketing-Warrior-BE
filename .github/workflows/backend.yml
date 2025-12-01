@@ -32,7 +32,7 @@ jobs:
   # CD: Build & Deploy (Only on main)
   cd:
     needs: ci
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/test/cd-test') && github.event_name == 'push'
     runs-on: ubuntu-latest
     environment: AWS # AWS 환경 변수 및 Secrets 사용 지정
     
