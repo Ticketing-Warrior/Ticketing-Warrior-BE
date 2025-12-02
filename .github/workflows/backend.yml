@@ -92,7 +92,7 @@ jobs:
           SUBNET_2=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='PrivateAppSubnet2'].OutputValue" --output text)
           
           # Fetch ECS Security Group from tw-security-groups stack
-          SECURITY_GROUP=$(aws cloudformation describe-stacks --stack-name tw-security-groups --query "Stacks[0].Outputs[?OutputKey=='TW-SG-ECS-ID'].OutputValue" --output text)
+          SECURITY_GROUP=$(aws cloudformation describe-stacks --stack-name tw-security-groups-infra --query "Stacks[0].Outputs[?OutputKey=='TW-SG-ECS-ID'].OutputValue" --output text)
           
           echo "SUBNETS=$SUBNET_1,$SUBNET_2" >> $GITHUB_OUTPUT
           echo "SECURITY_GROUP=$SECURITY_GROUP" >> $GITHUB_OUTPUT

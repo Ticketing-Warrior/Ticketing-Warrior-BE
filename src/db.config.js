@@ -14,5 +14,5 @@ export const AppDataSource = new DataSource({
   synchronize: process.env.NODE_ENV !== 'production', // 개발단계에서만 true!!
   logging: false,
   entities: [Record],
-	migrations: ["src/migrations/*.{js,ts}"],
+	migrations: ["src/migrations/*.{js}"],
 });
