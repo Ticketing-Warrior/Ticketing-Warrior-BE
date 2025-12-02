@@ -10,8 +10,8 @@ class BotManager {
     this.isEnabled = false;
     this.config = {
       botCount: 50, // 기본 봇 수
-      minSeatSelectDelay: 5000, // 좌석 선택 최소 대기 시간 (ms)
-      maxSeatSelectDelay: 30000, // 좌석 선택 최대 대기 시간 (ms)
+      minSeatSelectDelay: 2000, // 좌석 선택 최소 대기 시간 (ms)
+      maxSeatSelectDelay: 20000, // 좌석 선택 최대 대기 시간 (ms)
     };
   }
 
