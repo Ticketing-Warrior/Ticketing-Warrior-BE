@@ -1,6 +1,6 @@
-# 공연 티켓 예매 시스템 (Ticketing-Warrior)
+# 티켓팅 실전 연습 시뮬레이터 (Ticketing-Warrior)
 
-고가용성과 안정성을 갖춘 클라우드 기반 **공연 티켓 예매 시스템**입니다.  
+고가용성과 안정성을 갖춘 클라우드 기반 **티켓팅 실전 연습 시뮬레이터**입니다.  
 AWS의 서버리스 및 매니지드 서비스를 적극 활용하여 **대규모 트래픽에도 견딜 수 있는 인프라**를 구축했습니다.
 
 ---
@@ -50,7 +50,7 @@ CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 
 ### Backend
 - Node.js
 - Express.js
-- Prisma
+- TypeORM 
 - Docker
 
 ### Infra (AWS)
@@ -62,7 +62,7 @@ CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 
 - CloudFront + S3
 - Secrets Manager
 - CloudWatch
-- VPC (2-Tier Architecture)
+- VPC (3-Tier Architecture)
 
 ### DevOps
 - GitHub Actions (CI/CD)
@@ -70,7 +70,7 @@ CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 
 - CloudWatch Logs
 
 ### Test
-- f6
+- K6
 
 ---
 
@@ -91,8 +91,8 @@ CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 
 - ALB가 모든 API 트래픽을 ECS Tasks로 분산
 
 ### 데이터 스토리지
-- **Aurora RDS MySQL (Multi-AZ)**  
-- **ElastiCache (Valkey)**로 고속 캐싱 및 세션 관리
+- Aurora RDS MySQL (Multi-AZ)
+- ElastiCache (Valkey)로 고속 캐싱 및 세션 관리
 
 ---
 
@@ -107,7 +107,7 @@ CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 
 ### 주요 도메인 기능
 - 좌석 실시간 예매 트랜잭션 처리
 - Redis 기반 예매 락 처리
-- 예매 내역 조회
+- 예매 결과 조회
 
 ---
 
@@ -118,7 +118,7 @@ GitHub Actions 기반 자동 CI/CD 파이프라인 구성
 1. **커밋 및 푸시 → main 브랜치**
 2. GitHub Actions 자동 실행 (테스트 및 코드 검증)
 3. Docker 이미지 빌드 → **AWS ECR**로 Push
-4. AWS CLI로 **ECS Service force-new-deployment** 실행
+4. AWS ECS가 새 이미지를 감지하여 자동으로 ECS Service 재배포
 5. React Frontend는 별도 workflow로 **S3에 자동 업로드**
 
 ---
@@ -132,9 +132,9 @@ GitHub Actions 기반 자동 CI/CD 파이프라인 구성
 - 모든 Node.js 로그 → CloudWatch Logs 전송
 
 ### 주요 알람 (CloudWatch Alarm)
-- **ALB 5XX Error Rate > 5%**
-- **ECS Task CPU > 70%**
-- **Aurora DB Connections 임계치 초과**
+- ALB 5XX Error Rate > 5%
+- ECS Task CPU > 70%
+- Aurora DB Connections 임계치 초과
 
 ### 장애 대응 우선순위
 1. ALB 5XX 증가
