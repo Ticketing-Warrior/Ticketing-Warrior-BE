@@ -8,7 +8,7 @@
     "test": "jest --detectOpenHandles",
     "start": "node src/server.js",
     "dev": "nodemon --exec node src/server.js",
-    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/db.config.js"
+    "migration:run": "typeorm migration:run -d src/db.config.js"
   },
   "author": "",
   "license": "ISC",
@@ -22,9 +22,7 @@
     "node-cron": "^4.2.1",
     "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.27",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typeorm": "^0.3.27"
   },
   "devDependencies": {
     "jest": "^30.2.0",

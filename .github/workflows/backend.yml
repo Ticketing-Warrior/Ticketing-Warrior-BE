@@ -76,57 +76,13 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
 
       # Register Task Definition
-      # JSON 파일을 AWS에 등록하고, 진짜 ARN을 받아옵
+      # JSON 파일을 AWS에 등록하고, 진짜 ARN을 받아옴
       - name: Register Task Definition
         id: register-task
         run: |
           # Register the rendered task definition and get the ARN
           TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://${{ steps.task-def.outputs.task-definition }} --query 'taskDefinition.taskDefinitionArn' --output text)
           echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
-
-      - name: Fetch Network Configuration
-        id: network-config
-        run: |
-          # Fetch Private App Subnets from tw-vpc-infra stack
-          SUBNET_1=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='PrivateAppSubnet1'].OutputValue" --output text)
-          SUBNET_2=$(aws cloudformation describe-stacks --stack-name tw-vpc-infra --query "Stacks[0].Outputs[?OutputKey=='PrivateAppSubnet2'].OutputValue" --output text)
-          
-          # Fetch ECS Security Group from tw-security-groups stack
-          SECURITY_GROUP=$(aws cloudformation describe-stacks --stack-name tw-security-groups-infra --query "Stacks[0].Outputs[?OutputKey=='TW-SG-ECS-ID'].OutputValue" --output text)
-          
-          echo "SUBNETS=$SUBNET_1,$SUBNET_2" >> $GITHUB_OUTPUT
-          echo "SECURITY_GROUP=$SECURITY_GROUP" >> $GITHUB_OUTPUT
-
-      - name: Run DB Migration Task
-        id: run-migration
-        run: |
-          echo "Starting DB Migration Task..."
-          # 1. 마이그레이션 Task 실행 (원래 명령어 무시하고 마이그레이션 명령어만 실행)
-          TASK_ARN=$(aws ecs run-task \
-            --cluster tw-ticket-warrior-cluster \
-            --task-definition ${{ steps.register-task.outputs.TASK_DEF_ARN }} \
-            --launch-type FARGATE \
-            --network-configuration "awsvpcConfiguration={subnets=[${{ steps.network-config.outputs.SUBNETS }}],securityGroups=[${{ steps.network-config.outputs.SECURITY_GROUP }}],assignPublicIp=DISABLED}" \
-            --overrides '{"containerOverrides":[{"name":"tw-backend-container","command":["npm","run","migration:run"]}]}' \
-            --query "tasks[0].taskArn" --output text)
-          
-          
-          echo "Migration Task Started: $TASK_ARN"
-          
-          # Wait for task to complete
-          # 2. 마이그레이션 Task가 완료될 때까지 대기
-          aws ecs wait tasks-stopped --cluster tw-ticket-warrior-cluster --tasks $TASK_ARN
-          
-          # Check exit code
-          # 3. Task 종료 코드 확인 (0이 아니면 실패)
-          EXIT_CODE=$(aws ecs describe-tasks --cluster tw-ticket-warrior-cluster --tasks $TASK_ARN --query "tasks[0].containers[0].exitCode" --output text)
-          
-          if [ "$EXIT_CODE" != "0" ]; then
-            echo "Migration Failed with exit code: $EXIT_CODE"
-            exit 1
-          fi
-          
-          echo "Migration Completed Successfully!"
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
