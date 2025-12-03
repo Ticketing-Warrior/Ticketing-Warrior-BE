@@ -14,15 +14,15 @@ AWS의 서버리스 및 매니지드 서비스를 적극 활용하여 **대규�
 ---
 
 ## 2. 시스템 아키텍처
-<img alt="image" src="https://github.com/user-attachments/assets/88ca3183-9c46-40fa-bdc8-cced448605b3" />
+<img width="2000" height="1750" alt="2" src="https://github.com/user-attachments/assets/af7ce673-2d22-484d-b7ab-796f57ef1ad3" />
 
 
 ### 개요
-AWS ECS Fargate 기반 서버리스 컨테이너 아키텍처를 구축하였으며,  
-정적 콘텐츠는 CloudFront + S3로 분리하여 성능을 최적화했습니다.
+**AWS ECS Fargate** 기반 서버리스 컨테이너 아키텍처를 구축하였으며,  
+정적 콘텐츠는 **CloudFront + S3**로 분리하여 성능을 최적화했습니다.
 
-또한 Secrets Manager로 환경 변수를 안전하게 관리하고,  
-CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 아키텍처**입니다.
+또한 **Secrets Manager**로 환경 변수를 안전하게 관리하고,  
+**CloudWatch**로 전체 시스템을 모니터링하는 **보안·안정성 중심 아키텍처**입니다.
 
 ### 트래픽 흐름
 1. **사용자 요청** → CloudFront (CDN)
@@ -44,33 +44,36 @@ CloudWatch로 전체 시스템을 모니터링하는 **보안·안정성 중심 
 ## 3. 사용 기술 스택
 
 ### Frontend
-- React
-- Vite
+[![My Skills](https://skillicons.dev/icons?i=react,vite,js)](https://skillicons.dev)
 
 ### Backend
-- Node.js
-- Express.js
-- TypeORM 
-- Docker
+[![My Skills](https://skillicons.dev/icons?i=nodejs,express,mysql)](https://skillicons.dev)
 
-### Infra (AWS)
-- ECS Fargate
-- Elastic Container Registry (ECR)
-- Application Load Balancer (ALB)
-- Aurora RDS (MySQL, Multi-AZ)
-- ElastiCache (Valkey)
-- CloudFront + S3
-- Secrets Manager
-- CloudWatch
-- VPC (3-Tier Architecture)
+### Infra
+[![My Skills](https://skillicons.dev/icons?i=aws,redis)](https://skillicons.dev)
+<br>
+<br>
+**AWS Service**
+<br>
+<img width="40" height="40" alt="Arch_Amazon-VPC-Lattice_32" src="https://github.com/user-attachments/assets/05f2a5fe-b7af-4088-a550-f3fff04a624b" />
+<img width="40" height="40" alt="Arch_Amazon-ECS-Anywhere_32" src="https://github.com/user-attachments/assets/5be0a28b-d411-4394-940d-700f106cc0b5" />
+<img width="40" height="40" alt="Arch_Amazon-Elastic-Container-Registry_32" src="https://github.com/user-attachments/assets/976cf13d-308c-42af-8340-ec9d436b2cb4" />
+<img width="40" height="40" alt="Res_Elastic-Load-Balancing_Application-Load-Balancer_48" src="https://github.com/user-attachments/assets/fcea4ec5-63f7-4e0b-b5ff-528927e7b761" />
+<img width="40" height="40" alt="Arch_Amazon-Aurora_32" src="https://github.com/user-attachments/assets/a55ce58c-a911-45ca-93e5-fafa2bdd8321" />
+<img width="48" height="48" alt="Res_Amazon-ElastiCache_ElastiCache-for-Valkey_48" src="https://github.com/user-attachments/assets/8a73dde0-1a1d-493d-af3c-16a9b2830d35" />
+<img width="40" height="40" alt="Arch_Amazon-CloudFront_32" src="https://github.com/user-attachments/assets/b39a372f-e085-475d-a80d-6708714fddbe" />
+<img width="40" height="40" alt="Arch_Amazon-S3-on-Outposts_32" src="https://github.com/user-attachments/assets/2eb9a0d6-84b5-40c7-b6f4-7dde90a5fcff" />
+<img width="40" height="40" alt="Arch_AWS-Secrets-Manager_32" src="https://github.com/user-attachments/assets/14fb8f20-2180-4db4-8c8f-ed71be1c7403" />
+<img width="40" height="40" alt="Arch_Amazon-CloudWatch_32" src="https://github.com/user-attachments/assets/2409f64f-03e9-4dd7-977b-c8c38d6a7ed0" />
+<img width="40" height="40" alt="Arch_Amazon-Simple-Notification-Service_32" src="https://github.com/user-attachments/assets/003bcda5-0667-4d95-9e6d-03bb5e1bc2ac" />
+
 
 ### DevOps
-- GitHub Actions (CI/CD)
-- Docker 자동 배포
-- CloudWatch Logs
+[![My Skills](https://skillicons.dev/icons?i=githubactions,docker)](https://skillicons.dev)
 
 ### Test
-- K6
+<img width="40" height="40" alt="image" src="https://github.com/user-attachments/assets/37292bae-f916-46b8-8352-fd2b596df4da" />
+
 
 ---
 
